@@ -1,7 +1,7 @@
 [![Go Doc][godoc-image]][godoc-url]
 [![Build Status][workflow-image]][workflow-url]
 [![Go Report Card][goreport-image]][goreport-url]
-[![Go Report Card][codecov-image]][codecov-url]
+[![Test Coverage][codecov-image]][codecov-url]
 
 # go-github
 
