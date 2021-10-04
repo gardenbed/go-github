@@ -771,12 +771,22 @@ func TestClient_Repo(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			c := &Client{}
 
-			svc := c.Repo(tc.owner, tc.repo)
+			repo := c.Repo(tc.owner, tc.repo)
 
-			assert.NotNil(t, svc)
-			assert.Equal(t, c, svc.client)
-			assert.Equal(t, tc.owner, svc.owner)
-			assert.Equal(t, tc.repo, svc.repo)
+			assert.NotNil(t, repo)
+			assert.Equal(t, c, repo.client)
+			assert.Equal(t, tc.owner, repo.owner)
+			assert.Equal(t, tc.repo, repo.repo)
+
+			assert.NotNil(t, repo.Pulls)
+			assert.Equal(t, c, repo.Pulls.client)
+			assert.Equal(t, tc.owner, repo.Pulls.owner)
+			assert.Equal(t, tc.repo, repo.Pulls.repo)
+
+			assert.NotNil(t, repo.Issues)
+			assert.Equal(t, c, repo.Issues.client)
+			assert.Equal(t, tc.owner, repo.Issues.owner)
+			assert.Equal(t, tc.repo, repo.Issues.repo)
 		})
 	}
 }
