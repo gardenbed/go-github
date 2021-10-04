@@ -24,7 +24,6 @@ func ExampleUsersService_Get() {
 		panic(err)
 	}
 
-	fmt.Printf("Pages: %+v\n", resp.Pages)
 	fmt.Printf("Rate: %+v\n\n", resp.Rate)
 	fmt.Printf("Name: %s\n", user.Name)
 }
@@ -40,6 +39,36 @@ func ExampleRepoService_Commits() {
 	fmt.Printf("Pages: %+v\n", resp.Pages)
 	fmt.Printf("Rate: %+v\n\n", resp.Rate)
 	for _, c := range commits {
-		fmt.Printf("%s\n", c.SHA)
+		fmt.Printf("SHA: %s\n", c.SHA)
+	}
+}
+
+func ExamplePullsService_All() {
+	c := github.NewClient("")
+
+	pull, resp, err := c.Repo("octocat", "Hello-World").Pulls.All(context.Background(), 50, 1, github.PullsFilter{})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Pages: %+v\n", resp.Pages)
+	fmt.Printf("Rate: %+v\n\n", resp.Rate)
+	for _, p := range pull {
+		fmt.Printf("Title: %s\n", p.Title)
+	}
+}
+
+func ExampleIssuesService_All() {
+	c := github.NewClient("")
+
+	issues, resp, err := c.Repo("octocat", "Hello-World").Issues.All(context.Background(), 50, 1, github.IssuesFilter{})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Pages: %+v\n", resp.Pages)
+	fmt.Printf("Rate: %+v\n\n", resp.Rate)
+	for _, i := range issues {
+		fmt.Printf("Title: %s\n", i.Title)
 	}
 }

@@ -8,11 +8,15 @@ import (
 	"time"
 )
 
-// RepoService provides GitHub APIs for a specific repository.
+// RepoService provides GitHub APIs for a repository.
 // See https://docs.github.com/en/rest/reference/repos
 type RepoService struct {
 	client      *Client
 	owner, repo string
+
+	// Services
+	Pulls  *PullsService
+	Issues *IssuesService
 }
 
 // Repository is a GitHub repository object.
@@ -132,90 +136,6 @@ type Milestone struct {
 }
 
 type (
-	// PullURLs is an object added to an issue representing a pull request.
-	PullURLs struct {
-		URL      string `json:"url"`
-		HTMLURL  string `json:"html_url"`
-		DiffURL  string `json:"diff_url"`
-		PatchURL string `json:"patch_url"`
-	}
-
-	// Issue is a GitHub issue object.
-	Issue struct {
-		ID        int        `json:"id"`
-		Number    int        `json:"number"`
-		State     string     `json:"state"`
-		Locked    bool       `json:"locked"`
-		Title     string     `json:"title"`
-		Body      string     `json:"body"`
-		User      User       `json:"user"`
-		Labels    []Label    `json:"labels"`
-		Milestone *Milestone `json:"milestone"`
-		URL       string     `json:"url"`
-		HTMLURL   string     `json:"html_url"`
-		LabelsURL string     `json:"labels_url"`
-		PullURLs  *PullURLs  `json:"pull_request"`
-		CreatedAt time.Time  `json:"created_at"`
-		UpdatedAt time.Time  `json:"updated_at"`
-		ClosedAt  *time.Time `json:"closed_at"`
-	}
-)
-
-type (
-	// PullBranch represents a base or head object in a Pull object.
-	PullBranch struct {
-		Label string     `json:"label"`
-		Ref   string     `json:"ref"`
-		SHA   string     `json:"sha"`
-		User  User       `json:"user"`
-		Repo  Repository `json:"repo"`
-	}
-
-	// Pull is a GitHub pull request object.
-	Pull struct {
-		ID             int        `json:"id"`
-		Number         int        `json:"number"`
-		State          string     `json:"state"`
-		Draft          bool       `json:"draft"`
-		Locked         bool       `json:"locked"`
-		Title          string     `json:"title"`
-		Body           string     `json:"body"`
-		User           User       `json:"user"`
-		Labels         []Label    `json:"labels"`
-		Milestone      *Milestone `json:"milestone"`
-		Base           PullBranch `json:"base"`
-		Head           PullBranch `json:"head"`
-		Merged         bool       `json:"merged"`
-		Mergeable      *bool      `json:"mergeable"`
-		Rebaseable     *bool      `json:"rebaseable"`
-		MergedBy       *User      `json:"merged_by"`
-		MergeCommitSHA string     `json:"merge_commit_sha"`
-		URL            string     `json:"url"`
-		HTMLURL        string     `json:"html_url"`
-		DiffURL        string     `json:"diff_url"`
-		PatchURL       string     `json:"patch_url"`
-		IssueURL       string     `json:"issue_url"`
-		CommitsURL     string     `json:"commits_url"`
-		StatusesURL    string     `json:"statuses_url"`
-		CreatedAt      time.Time  `json:"created_at"`
-		UpdatedAt      time.Time  `json:"updated_at"`
-		ClosedAt       *time.Time `json:"closed_at"`
-		MergedAt       *time.Time `json:"merged_at"`
-	}
-)
-
-// Event is a GitHub event object.
-type Event struct {
-	ID        int       `json:"id"`
-	Event     string    `json:"event"`
-	CommitID  string    `json:"commit_id"`
-	Actor     User      `json:"actor"`
-	URL       string    `json:"url"`
-	CommitURL string    `json:"commit_url"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
-type (
 	// ReleaseParams is used for creating or updating a GitHub release.
 	ReleaseParams struct {
 		Name       string `json:"name"`
@@ -305,7 +225,7 @@ func (s *RepoService) Permission(ctx context.Context, username string) (Permissi
 	return body.Permission, resp, nil
 }
 
-// Commit retrieves a commit for a given repository by its reference.
+// Commit retrieves a commit in the repository by its reference.
 // See https://docs.github.com/rest/reference/repos#get-a-commit
 func (s *RepoService) Commit(ctx context.Context, ref string) (*Commit, *Response, error) {
 	url := fmt.Sprintf("/repos/%s/%s/commits/%s", s.owner, s.repo, ref)
@@ -324,7 +244,7 @@ func (s *RepoService) Commit(ctx context.Context, ref string) (*Commit, *Respons
 	return commit, resp, nil
 }
 
-// Commits retrieves all commits for a given repository page by page.
+// Commits retrieves all commits in the repository page by page.
 // See https://docs.github.com/rest/reference/repos#list-commits
 func (s *RepoService) Commits(ctx context.Context, pageSize, pageNo int) ([]Commit, *Response, error) {
 	url := fmt.Sprintf("/repos/%s/%s/commits", s.owner, s.repo)
@@ -343,7 +263,7 @@ func (s *RepoService) Commits(ctx context.Context, pageSize, pageNo int) ([]Comm
 	return commits, resp, nil
 }
 
-// Branch retrieves a branch for a given repository by its name.
+// Branch retrieves a branch in the repository by its name.
 // See https://docs.github.com/rest/reference/repos#get-a-branch
 func (s *RepoService) Branch(ctx context.Context, name string) (*Branch, *Response, error) {
 	url := fmt.Sprintf("/repos/%s/%s/branches/%s", s.owner, s.repo, name)
@@ -387,7 +307,7 @@ func (s *RepoService) BranchProtection(ctx context.Context, branch string, enabl
 	return resp, nil
 }
 
-// Tags retrieves all tags for a given repository page by page.
+// Tags retrieves all tags in the repository page by page.
 // See https://docs.github.com/rest/reference/repos#list-repository-tags
 func (s *RepoService) Tags(ctx context.Context, pageSize, pageNo int) ([]Tag, *Response, error) {
 	url := fmt.Sprintf("/repos/%s/%s/tags", s.owner, s.repo)
@@ -404,113 +324,6 @@ func (s *RepoService) Tags(ctx context.Context, pageSize, pageNo int) ([]Tag, *R
 	}
 
 	return tags, resp, nil
-}
-
-// IssuesParams are optional parameters for Issues.
-type IssuesParams struct {
-	State string
-	Since time.Time
-}
-
-// Issues retrieves all issues for a given repository page by page.
-// See https://docs.github.com/rest/reference/issues#list-repository-issues
-func (s *RepoService) Issues(ctx context.Context, pageSize, pageNo int, params IssuesParams) ([]Issue, *Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/issues", s.owner, s.repo)
-	req, err := s.client.NewPageRequest(ctx, "GET", url, pageSize, pageNo, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	q := req.URL.Query()
-
-	if params.State != "" {
-		q.Add("state", params.State)
-	}
-
-	if !params.Since.IsZero() {
-		q.Add("since", params.Since.Format(time.RFC3339))
-	}
-
-	req.URL.RawQuery = q.Encode()
-
-	issues := []Issue{}
-
-	resp, err := s.client.Do(req, &issues)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return issues, resp, nil
-}
-
-// Pull retrieves a pull request for a given repository by its number.
-// See https://docs.github.com/rest/reference/pulls#get-a-pull-request
-func (s *RepoService) Pull(ctx context.Context, number int) (*Pull, *Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/pulls/%d", s.owner, s.repo, number)
-	req, err := s.client.NewRequest(ctx, "GET", url, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	pull := new(Pull)
-
-	resp, err := s.client.Do(req, pull)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return pull, resp, nil
-}
-
-// PullsParams are optional parameters for Pulls.
-type PullsParams struct {
-	State string
-}
-
-// Pulls retrieves all pull requests for a given repository page by page.
-// See https://docs.github.com/rest/reference/pulls#list-pull-requests
-func (s *RepoService) Pulls(ctx context.Context, pageSize, pageNo int, params PullsParams) ([]Pull, *Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/pulls", s.owner, s.repo)
-	req, err := s.client.NewPageRequest(ctx, "GET", url, pageSize, pageNo, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	q := req.URL.Query()
-
-	if params.State != "" {
-		q.Add("state", params.State)
-	}
-
-	req.URL.RawQuery = q.Encode()
-
-	pulls := []Pull{}
-
-	resp, err := s.client.Do(req, &pulls)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return pulls, resp, nil
-}
-
-// Events retrieves all events for a given repository and an issue page by page.
-// See https://docs.github.com/rest/reference/issues#list-issue-events
-func (s *RepoService) Events(ctx context.Context, number, pageSize, pageNo int) ([]Event, *Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/issues/%d/events", s.owner, s.repo, number)
-	req, err := s.client.NewPageRequest(ctx, "GET", url, pageSize, pageNo, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	events := []Event{}
-
-	resp, err := s.client.Do(req, &events)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return events, resp, nil
 }
 
 // LatestRelease returns the latest GitHub release.
