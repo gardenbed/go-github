@@ -118,6 +118,14 @@ const (
 	QualifierIsLocked Qualifier = "is:locked"
 	// QualifierIsUnlocked matches issues or pull requests that have an unlocked conversation.
 	QualifierIsUnlocked Qualifier = "is:unlocked"
+	// QualifierNoAssignee matches issues or pull requests without any assignees.
+	QualifierNoAssignee Qualifier = "no:assignee"
+	// QualifierNoLabel matches issues or pull requests without any labels.
+	QualifierNoLabel Qualifier = "no:label"
+	// QualifierNoProject matches issues or pull requests without any projects.
+	QualifierNoProject Qualifier = "no:project"
+	// QualifierNoMilestone matches issues or pull requests without a milestone.
+	QualifierNoMilestone Qualifier = "no:milestone"
 )
 
 // QualifierUser creates a qualifier for matching a user.
