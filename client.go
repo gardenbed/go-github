@@ -56,7 +56,8 @@ type Client struct {
 	accessToken string
 
 	// Services
-	Users *UsersService
+	Users  *UsersService
+	Search *SearchService
 }
 
 func newHTTPClient() *http.Client {
@@ -80,6 +81,10 @@ func NewClient(accessToken string) *Client {
 	}
 
 	c.Users = &UsersService{
+		client: c,
+	}
+
+	c.Search = &SearchService{
 		client: c,
 	}
 
@@ -113,6 +118,10 @@ func NewEnterpriseClient(apiURL, uploadURL, downloadURL, accessToken string) (*C
 	}
 
 	c.Users = &UsersService{
+		client: c,
+	}
+
+	c.Search = &SearchService{
 		client: c,
 	}
 
