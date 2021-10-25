@@ -13,6 +13,8 @@ const dateYYYYMMDD = "2006-01-02"
 type SearchResultSort string
 
 const (
+	// SortByDefault uses the default sorting criteria (best match).
+	SortByDefault SearchResultSort = ""
 	// SortByFollowers sorts users by the number of followers.
 	SortByFollowers SearchResultSort = "followers"
 	// SortByRepositories sorts users by the number of repositories.
@@ -39,6 +41,8 @@ const (
 type SearchResultOrder string
 
 const (
+	// DefaultOrder uses the default ordering.
+	DefaultOrder SearchResultOrder = ""
 	// AscOrder returns the search results in ascending order.
 	AscOrder SearchResultOrder = "asc"
 	// DescOrder returns the search results in descending order.
