@@ -59,6 +59,7 @@ func TestNewClient(t *testing.T) {
 			assert.NotNil(t, c.downloadURL)
 			assert.Equal(t, tc.accessToken, c.accessToken)
 			assert.NotNil(t, c.Users)
+			assert.NotNil(t, c.Search)
 		})
 	}
 }
@@ -121,6 +122,7 @@ func TestNewEnterpriseClient(t *testing.T) {
 				assert.NotNil(t, c.downloadURL)
 				assert.Equal(t, tc.accessToken, c.accessToken)
 				assert.NotNil(t, c.Users)
+				assert.NotNil(t, c.Search)
 			}
 		})
 	}

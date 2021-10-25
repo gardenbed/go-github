@@ -10,14 +10,15 @@ import (
 )
 
 var (
-	relFirstRE = regexp.MustCompile(`<[\w\.:?&=/-]+page=(\d+)[\w\.:?&=/-]*>; rel="first"`)
-	relPrevRE  = regexp.MustCompile(`<[\w\.:?&=/-]+page=(\d+)[\w\.:?&=/-]*>; rel="prev"`)
-	relNextRE  = regexp.MustCompile(`<[\w\.:?&=/-]+page=(\d+)[\w\.:?&=/-]*>; rel="next"`)
-	relLastRE  = regexp.MustCompile(`<[\w\.:?&=/-]+page=(\d+)[\w\.:?&=/-]*>; rel="last"`)
+	relFirstRE = regexp.MustCompile(`<https://api.github.com/[^>]+[?&]page=(\d+)[^>]*>; rel="first"`)
+	relPrevRE  = regexp.MustCompile(`<https://api.github.com/[^>]+[?&]page=(\d+)[^>]*>; rel="prev"`)
+	relNextRE  = regexp.MustCompile(`<https://api.github.com/[^>]+[?&]page=(\d+)[^>]*>; rel="next"`)
+	relLastRE  = regexp.MustCompile(`<https://api.github.com/[^>]+[?&]page=(\d+)[^>]*>; rel="last"`)
 )
 
 const (
 	headerLink          = "Link"
+	headerRateResource  = "X-Ratelimit-Resource"
 	headerRateLimit     = "X-RateLimit-Limit"
 	headerRateUsed      = "X-RateLimit-Used"
 	headerRateRemaining = "X-RateLimit-Remaining"
@@ -128,15 +129,14 @@ func (e Epoch) String() string {
 
 // Rate represents the rate limit status for the authenticated user.
 type Rate struct {
+	// The resource being rate limited.
+	Resource string `json:"resource"`
 	// The number of requests per hour.
 	Limit int `json:"limit"`
-
 	// The number of requests used in the current hour.
-	Used int `json:"used,omitempty"`
-
+	Used int `json:"used"`
 	// The number of requests remaining in the current hour.
 	Remaining int `json:"remaining"`
-
 	// The time at which the current rate will reset.
 	Reset Epoch `json:"reset"`
 }
@@ -173,6 +173,8 @@ func newResponse(resp *http.Response) *Response {
 			r.Pages.Last, _ = strconv.Atoi(m[1])
 		}
 	}
+
+	r.Rate.Resource = h.Get(headerRateResource)
 
 	if limit := h.Get(headerRateLimit); limit != "" {
 		r.Rate.Limit, _ = strconv.Atoi(limit)
