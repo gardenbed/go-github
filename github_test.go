@@ -39,7 +39,8 @@ func TestResponse(t *testing.T) {
 		{
 			name: "WithNextAndLast",
 			respHeader: http.Header{
-				headerLink:          {`<https://api.github.com/repositories/100/issues?page=2&state=closed>; rel="next", <https://api.github.com/repositories/100/issues?page=6&state=closed>; rel="last"`},
+				headerLink:          {`<https://api.github.com/repos/octocat/Hello-World/issues?page=2&state=closed>; rel="next", <https://api.github.com/repos/octocat/Hello-World/issues?page=6&state=closed>; rel="last"`},
+				headerRateResource:  {"core"},
 				headerRateLimit:     {"5000"},
 				headerRateUsed:      {"5"},
 				headerRateRemaining: {"4995"},
@@ -51,6 +52,7 @@ func TestResponse(t *testing.T) {
 					Last: 6,
 				},
 				Rate: Rate{
+					Resource:  "core",
 					Limit:     5000,
 					Used:      5,
 					Remaining: 4995,
@@ -61,7 +63,8 @@ func TestResponse(t *testing.T) {
 		{
 			name: "WithAll",
 			respHeader: http.Header{
-				headerLink:          {`<https://api.github.com/repositories/100/issues?page=2&state=closed>; rel="prev", <https://api.github.com/repositories/100/issues?page=4&state=closed>; rel="next", <https://api.github.com/repositories/100/issues?page=6&state=closed>; rel="last", <https://api.github.com/repositories/100/issues?page=1&state=closed>; rel="first"`},
+				headerLink:          {`<https://api.github.com/repos/octocat/Hello-World/issues?page=2&state=closed>; rel="prev", <https://api.github.com/repos/octocat/Hello-World/issues?page=4&state=closed>; rel="next", <https://api.github.com/repos/octocat/Hello-World/issues?page=6&state=closed>; rel="last", <https://api.github.com/repos/octocat/Hello-World/issues?page=1&state=closed>; rel="first"`},
+				headerRateResource:  {"core"},
 				headerRateLimit:     {"5000"},
 				headerRateUsed:      {"10"},
 				headerRateRemaining: {"4990"},
@@ -75,6 +78,7 @@ func TestResponse(t *testing.T) {
 					Last:  6,
 				},
 				Rate: Rate{
+					Resource:  "core",
 					Limit:     5000,
 					Used:      10,
 					Remaining: 4990,
@@ -85,7 +89,8 @@ func TestResponse(t *testing.T) {
 		{
 			name: "WithPrevAndFirst",
 			respHeader: http.Header{
-				headerLink:          {`<https://api.github.com/repositories/100/issues?page=5&state=closed>; rel="prev", <https://api.github.com/repositories/100/issues?page=1&state=closed>; rel="first"`},
+				headerLink:          {`<https://api.github.com/repos/octocat/Hello-World/issues?page=5&state=closed>; rel="prev", <https://api.github.com/repos/octocat/Hello-World/issues?page=1&state=closed>; rel="first"`},
+				headerRateResource:  {"core"},
 				headerRateLimit:     {"5000"},
 				headerRateUsed:      {"100"},
 				headerRateRemaining: {"4900"},
@@ -97,6 +102,7 @@ func TestResponse(t *testing.T) {
 					Prev:  5,
 				},
 				Rate: Rate{
+					Resource:  "core",
 					Limit:     5000,
 					Used:      100,
 					Remaining: 4900,
