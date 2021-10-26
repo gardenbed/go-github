@@ -55,15 +55,29 @@ func ExampleIssueService_List() {
 
 func ExamplePullService_List() {
 	client := github.NewClient("")
-	pull, resp, err := client.Repo("octocat", "Hello-World").Pulls.List(context.Background(), 50, 1, github.PullsFilter{})
+	pulls, resp, err := client.Repo("octocat", "Hello-World").Pulls.List(context.Background(), 50, 1, github.PullsFilter{})
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("Pages: %+v\n", resp.Pages)
 	fmt.Printf("Rate: %+v\n\n", resp.Rate)
-	for _, p := range pull {
+	for _, p := range pulls {
 		fmt.Printf("Title: %s\n", p.Title)
+	}
+}
+
+func ExampleReleaseService_List() {
+	client := github.NewClient("")
+	releases, resp, err := client.Repo("octocat", "Hello-World").Releases.List(context.Background(), 20, 1)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Pages: %+v\n", resp.Pages)
+	fmt.Printf("Rate: %+v\n\n", resp.Rate)
+	for _, r := range releases {
+		fmt.Printf("Name: %s\n", r.Name)
 	}
 }
 
