@@ -109,15 +109,12 @@ func (s *PullService) List(ctx context.Context, pageSize, pageNo int, filter Pul
 	}
 
 	q := req.URL.Query()
-
 	if filter.State != "" {
 		q.Add("state", filter.State)
 	}
-
 	req.URL.RawQuery = q.Encode()
 
 	pulls := []Pull{}
-
 	resp, err := s.client.Do(req, &pulls)
 	if err != nil {
 		return nil, nil, err

@@ -70,19 +70,15 @@ func (s *IssueService) List(ctx context.Context, pageSize, pageNo int, filter Is
 	}
 
 	q := req.URL.Query()
-
 	if filter.State != "" {
 		q.Add("state", filter.State)
 	}
-
 	if !filter.Since.IsZero() {
 		q.Add("since", filter.Since.Format(time.RFC3339))
 	}
-
 	req.URL.RawQuery = q.Encode()
 
 	issues := []Issue{}
-
 	resp, err := s.client.Do(req, &issues)
 	if err != nil {
 		return nil, nil, err

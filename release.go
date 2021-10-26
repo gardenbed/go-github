@@ -14,7 +14,26 @@ type ReleaseService struct {
 	owner, repo string
 }
 
-// Latest returns the latest GitHub release.
+// List retrieves all releases.
+// If the user has push access, draft releases will also be returned.
+// See https://docs.github.com/en/rest/reference/repos#list-releases
+func (s *ReleaseService) List(ctx context.Context, pageSize, pageNo int) ([]Release, *Response, error) {
+	url := fmt.Sprintf("/repos/%s/%s/releases", s.owner, s.repo)
+	req, err := s.client.NewPageRequest(ctx, "GET", url, pageSize, pageNo, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	releases := []Release{}
+	resp, err := s.client.Do(req, &releases)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return releases, resp, nil
+}
+
+// Latest returns the latest release.
 // The latest release is the most recent non-prerelease and non-draft release.
 // See https://docs.github.com/rest/reference/repos#get-the-latest-release
 func (s *ReleaseService) Latest(ctx context.Context) (*Release, *Response, error) {
