@@ -145,7 +145,7 @@ var (
 	}
 )
 
-func TestPullsService_Get(t *testing.T) {
+func TestPullService_Get(t *testing.T) {
 	c := &Client{
 		httpClient: &http.Client{},
 		rates:      map[rateGroup]Rate{},
@@ -155,7 +155,7 @@ func TestPullsService_Get(t *testing.T) {
 	tests := []struct {
 		name             string
 		mockResponses    []MockResponse
-		s                *PullsService
+		s                *PullService
 		ctx              context.Context
 		number           int
 		expectedPull     *Pull
@@ -165,7 +165,7 @@ func TestPullsService_Get(t *testing.T) {
 		{
 			name:          "NilContext",
 			mockResponses: []MockResponse{},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -181,7 +181,7 @@ func TestPullsService_Get(t *testing.T) {
 					"message": "Bad credentials"
 				}`},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -195,7 +195,7 @@ func TestPullsService_Get(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/repos/octocat/Hello-World/pulls/1001", 200, http.Header{}, `{`},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -209,7 +209,7 @@ func TestPullsService_Get(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/repos/octocat/Hello-World/pulls/1001", 200, header, pullBody},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -245,7 +245,7 @@ func TestPullsService_Get(t *testing.T) {
 	}
 }
 
-func TestPullsService_All(t *testing.T) {
+func TestPullService_List(t *testing.T) {
 	c := &Client{
 		httpClient: &http.Client{},
 		rates:      map[rateGroup]Rate{},
@@ -255,7 +255,7 @@ func TestPullsService_All(t *testing.T) {
 	tests := []struct {
 		name             string
 		mockResponses    []MockResponse
-		s                *PullsService
+		s                *PullService
 		ctx              context.Context
 		pageSize         int
 		pageNo           int
@@ -267,7 +267,7 @@ func TestPullsService_All(t *testing.T) {
 		{
 			name:          "NilContext",
 			mockResponses: []MockResponse{},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -287,7 +287,7 @@ func TestPullsService_All(t *testing.T) {
 					"message": "Bad credentials"
 				}`},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -305,7 +305,7 @@ func TestPullsService_All(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/repos/octocat/Hello-World/pulls", 200, http.Header{}, `[`},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -323,7 +323,7 @@ func TestPullsService_All(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/repos/octocat/Hello-World/pulls", 200, header, pullsBody},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -347,7 +347,7 @@ func TestPullsService_All(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
-			pulls, resp, err := tc.s.All(tc.ctx, tc.pageSize, tc.pageNo, tc.params)
+			pulls, resp, err := tc.s.List(tc.ctx, tc.pageSize, tc.pageNo, tc.params)
 
 			if tc.expectedError != "" {
 				assert.Nil(t, pulls)
@@ -365,7 +365,7 @@ func TestPullsService_All(t *testing.T) {
 	}
 }
 
-func TestPullsService_Create(t *testing.T) {
+func TestPullService_Create(t *testing.T) {
 	c := &Client{
 		httpClient: &http.Client{},
 		rates:      map[rateGroup]Rate{},
@@ -383,7 +383,7 @@ func TestPullsService_Create(t *testing.T) {
 	tests := []struct {
 		name             string
 		mockResponses    []MockResponse
-		s                *PullsService
+		s                *PullService
 		ctx              context.Context
 		params           CreatePullParams
 		expectedPull     *Pull
@@ -393,7 +393,7 @@ func TestPullsService_Create(t *testing.T) {
 		{
 			name:          "NilContext",
 			mockResponses: []MockResponse{},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -409,7 +409,7 @@ func TestPullsService_Create(t *testing.T) {
 					"message": "Bad credentials"
 				}`},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -423,7 +423,7 @@ func TestPullsService_Create(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"POST", "/repos/octocat/Hello-World/pulls", 201, http.Header{}, `{`},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -437,7 +437,7 @@ func TestPullsService_Create(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"POST", "/repos/octocat/Hello-World/pulls", 201, header, pullBody},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -473,7 +473,7 @@ func TestPullsService_Create(t *testing.T) {
 	}
 }
 
-func TestPullsService_Update(t *testing.T) {
+func TestPullService_Update(t *testing.T) {
 	c := &Client{
 		httpClient: &http.Client{},
 		rates:      map[rateGroup]Rate{},
@@ -490,7 +490,7 @@ func TestPullsService_Update(t *testing.T) {
 	tests := []struct {
 		name             string
 		mockResponses    []MockResponse
-		s                *PullsService
+		s                *PullService
 		ctx              context.Context
 		number           int
 		params           UpdatePullParams
@@ -501,7 +501,7 @@ func TestPullsService_Update(t *testing.T) {
 		{
 			name:          "NilContext",
 			mockResponses: []MockResponse{},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -518,7 +518,7 @@ func TestPullsService_Update(t *testing.T) {
 					"message": "Bad credentials"
 				}`},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -533,7 +533,7 @@ func TestPullsService_Update(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"PATCH", "/repos/octocat/Hello-World/pulls/1", 200, http.Header{}, `{`},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -548,7 +548,7 @@ func TestPullsService_Update(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"PATCH", "/repos/octocat/Hello-World/pulls/1", 200, header, pullBody},
 			},
-			s: &PullsService{
+			s: &PullService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",

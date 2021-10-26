@@ -44,7 +44,7 @@ func TestUserService_User(t *testing.T) {
 	tests := []struct {
 		name             string
 		mockResponses    []MockResponse
-		s                *UsersService
+		s                *UserService
 		ctx              context.Context
 		expectedUser     *User
 		expectedResponse *Response
@@ -53,7 +53,7 @@ func TestUserService_User(t *testing.T) {
 		{
 			name:          "NilContext",
 			mockResponses: []MockResponse{},
-			s: &UsersService{
+			s: &UserService{
 				client: c,
 			},
 			ctx:           nil,
@@ -66,7 +66,7 @@ func TestUserService_User(t *testing.T) {
 					"message": "Bad credentials"
 				}`},
 			},
-			s: &UsersService{
+			s: &UserService{
 				client: c,
 			},
 			ctx:           context.Background(),
@@ -77,7 +77,7 @@ func TestUserService_User(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/user", 200, http.Header{}, `{`},
 			},
-			s: &UsersService{
+			s: &UserService{
 				client: c,
 			},
 			ctx:           context.Background(),
@@ -88,7 +88,7 @@ func TestUserService_User(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/user", 200, header, userBody},
 			},
-			s: &UsersService{
+			s: &UserService{
 				client: c,
 			},
 			ctx:          context.Background(),
@@ -133,7 +133,7 @@ func TestUserService_Get(t *testing.T) {
 	tests := []struct {
 		name             string
 		mockResponses    []MockResponse
-		s                *UsersService
+		s                *UserService
 		ctx              context.Context
 		username         string
 		expectedUser     *User
@@ -143,7 +143,7 @@ func TestUserService_Get(t *testing.T) {
 		{
 			name:          "NilContext",
 			mockResponses: []MockResponse{},
-			s: &UsersService{
+			s: &UserService{
 				client: c,
 			},
 			ctx:           nil,
@@ -157,7 +157,7 @@ func TestUserService_Get(t *testing.T) {
 					"message": "Bad credentials"
 				}`},
 			},
-			s: &UsersService{
+			s: &UserService{
 				client: c,
 			},
 			ctx:           context.Background(),
@@ -169,7 +169,7 @@ func TestUserService_Get(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/users/octocat", 200, http.Header{}, `{`},
 			},
-			s: &UsersService{
+			s: &UserService{
 				client: c,
 			},
 			ctx:           context.Background(),
@@ -181,7 +181,7 @@ func TestUserService_Get(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/users/octocat", 200, header, userBody},
 			},
-			s: &UsersService{
+			s: &UserService{
 				client: c,
 			},
 			ctx:          context.Background(),

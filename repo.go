@@ -13,8 +13,8 @@ type RepoService struct {
 	owner, repo string
 
 	// Services
-	Pulls    *PullsService
-	Issues   *IssuesService
+	Pulls    *PullService
+	Issues   *IssueService
 	Releases *ReleaseService
 }
 

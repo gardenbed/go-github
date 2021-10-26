@@ -8,18 +8,15 @@ import (
 )
 
 func ExampleClient_EnsureScopes() {
-	c := github.NewClient("")
-
-	err := c.EnsureScopes(context.Background(), github.ScopeRepo)
-	if err != nil {
+	client := github.NewClient("")
+	if err := client.EnsureScopes(context.Background(), github.ScopeRepo); err != nil {
 		panic(err)
 	}
 }
 
-func ExampleUsersService_Get() {
-	c := github.NewClient("")
-
-	user, resp, err := c.Users.Get(context.Background(), "octocat")
+func ExampleUserService_Get() {
+	client := github.NewClient("")
+	user, resp, err := client.Users.Get(context.Background(), "octocat")
 	if err != nil {
 		panic(err)
 	}
@@ -29,9 +26,8 @@ func ExampleUsersService_Get() {
 }
 
 func ExampleRepoService_Commits() {
-	c := github.NewClient("")
-
-	commits, resp, err := c.Repo("octocat", "Hello-World").Commits(context.Background(), 50, 1)
+	client := github.NewClient("")
+	commits, resp, err := client.Repo("octocat", "Hello-World").Commits(context.Background(), 50, 1)
 	if err != nil {
 		panic(err)
 	}
@@ -43,10 +39,23 @@ func ExampleRepoService_Commits() {
 	}
 }
 
-func ExamplePullsService_All() {
-	c := github.NewClient("")
+func ExampleIssueService_List() {
+	client := github.NewClient("")
+	issues, resp, err := client.Repo("octocat", "Hello-World").Issues.List(context.Background(), 50, 1, github.IssuesFilter{})
+	if err != nil {
+		panic(err)
+	}
 
-	pull, resp, err := c.Repo("octocat", "Hello-World").Pulls.All(context.Background(), 50, 1, github.PullsFilter{})
+	fmt.Printf("Pages: %+v\n", resp.Pages)
+	fmt.Printf("Rate: %+v\n\n", resp.Rate)
+	for _, i := range issues {
+		fmt.Printf("Title: %s\n", i.Title)
+	}
+}
+
+func ExamplePullService_List() {
+	client := github.NewClient("")
+	pull, resp, err := client.Repo("octocat", "Hello-World").Pulls.List(context.Background(), 50, 1, github.PullsFilter{})
 	if err != nil {
 		panic(err)
 	}
@@ -58,17 +67,26 @@ func ExamplePullsService_All() {
 	}
 }
 
-func ExampleIssuesService_All() {
-	c := github.NewClient("")
+func ExampleSearchService_SearchIssues() {
+	client := github.NewClient("")
 
-	issues, resp, err := c.Repo("octocat", "Hello-World").Issues.All(context.Background(), 50, 1, github.IssuesFilter{})
+	query := github.SearchQuery{}
+	query.IncludeKeywords("Fix")
+	query.ExcludeKeywords("WIP")
+	query.IncludeQualifiers(
+		github.QualifierTypePR,
+		github.QualifierInTitle,
+		github.QualifierLabel("bug"),
+	)
+
+	result, resp, err := client.Search.SearchIssues(context.Background(), 20, 1, "", "", query)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("Pages: %+v\n", resp.Pages)
 	fmt.Printf("Rate: %+v\n\n", resp.Rate)
-	for _, i := range issues {
-		fmt.Printf("Title: %s\n", i.Title)
+	for _, issue := range result.Items {
+		fmt.Printf("%s\n", issue.HTMLURL)
 	}
 }
