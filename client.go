@@ -56,7 +56,7 @@ type Client struct {
 	accessToken string
 
 	// Services
-	Users  *UsersService
+	Users  *UserService
 	Search *SearchService
 }
 
@@ -80,7 +80,7 @@ func NewClient(accessToken string) *Client {
 		accessToken: accessToken,
 	}
 
-	c.Users = &UsersService{
+	c.Users = &UserService{
 		client: c,
 	}
 
@@ -117,7 +117,7 @@ func NewEnterpriseClient(apiURL, uploadURL, downloadURL, accessToken string) (*C
 		accessToken: accessToken,
 	}
 
-	c.Users = &UsersService{
+	c.Users = &UserService{
 		client: c,
 	}
 
@@ -408,12 +408,12 @@ func (c *Client) Repo(owner, repo string) *RepoService {
 		client: c,
 		owner:  owner,
 		repo:   repo,
-		Pulls: &PullsService{
+		Pulls: &PullService{
 			client: c,
 			owner:  owner,
 			repo:   repo,
 		},
-		Issues: &IssuesService{
+		Issues: &IssueService{
 			client: c,
 			owner:  owner,
 			repo:   repo,

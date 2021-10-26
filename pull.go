@@ -6,9 +6,9 @@ import (
 	"time"
 )
 
-// PullsService provides GitHub APIs for pull requests in a repository.
+// PullService provides GitHub APIs for pull requests in a repository.
 // See https://docs.github.com/en/rest/reference/pulls
-type PullsService struct {
+type PullService struct {
 	client      *Client
 	owner, repo string
 }
@@ -77,7 +77,7 @@ type (
 
 // Get retrieves a pull request in the repository by its number.
 // See https://docs.github.com/rest/reference/pulls#get-a-pull-request
-func (s *PullsService) Get(ctx context.Context, number int) (*Pull, *Response, error) {
+func (s *PullService) Get(ctx context.Context, number int) (*Pull, *Response, error) {
 	url := fmt.Sprintf("/repos/%s/%s/pulls/%d", s.owner, s.repo, number)
 	req, err := s.client.NewRequest(ctx, "GET", url, nil)
 	if err != nil {
@@ -99,9 +99,9 @@ type PullsFilter struct {
 	State string
 }
 
-// All retrieves all pull requests in the repository page by page.
+// List retrieves all pull requests in the repository page by page.
 // See https://docs.github.com/rest/reference/pulls#list-pull-requests
-func (s *PullsService) All(ctx context.Context, pageSize, pageNo int, filter PullsFilter) ([]Pull, *Response, error) {
+func (s *PullService) List(ctx context.Context, pageSize, pageNo int, filter PullsFilter) ([]Pull, *Response, error) {
 	url := fmt.Sprintf("/repos/%s/%s/pulls", s.owner, s.repo)
 	req, err := s.client.NewPageRequest(ctx, "GET", url, pageSize, pageNo, nil)
 	if err != nil {
@@ -109,15 +109,12 @@ func (s *PullsService) All(ctx context.Context, pageSize, pageNo int, filter Pul
 	}
 
 	q := req.URL.Query()
-
 	if filter.State != "" {
 		q.Add("state", filter.State)
 	}
-
 	req.URL.RawQuery = q.Encode()
 
 	pulls := []Pull{}
-
 	resp, err := s.client.Do(req, &pulls)
 	if err != nil {
 		return nil, nil, err
@@ -128,7 +125,7 @@ func (s *PullsService) All(ctx context.Context, pageSize, pageNo int, filter Pul
 
 // Create creates a new pull request in the repository.
 // See https://docs.github.com/en/rest/reference/pulls#create-a-pull-request
-func (s *PullsService) Create(ctx context.Context, params CreatePullParams) (*Pull, *Response, error) {
+func (s *PullService) Create(ctx context.Context, params CreatePullParams) (*Pull, *Response, error) {
 	url := fmt.Sprintf("/repos/%s/%s/pulls", s.owner, s.repo)
 	req, err := s.client.NewRequest(ctx, "POST", url, params)
 	if err != nil {
@@ -147,7 +144,7 @@ func (s *PullsService) Create(ctx context.Context, params CreatePullParams) (*Pu
 
 // Update updates a pull request in the repository.
 // See https://docs.github.com/en/rest/reference/pulls#update-a-pull-request
-func (s *PullsService) Update(ctx context.Context, number int, params UpdatePullParams) (*Pull, *Response, error) {
+func (s *PullService) Update(ctx context.Context, number int, params UpdatePullParams) (*Pull, *Response, error) {
 	url := fmt.Sprintf("/repos/%s/%s/pulls/%d", s.owner, s.repo, number)
 	req, err := s.client.NewRequest(ctx, "PATCH", url, params)
 	if err != nil {

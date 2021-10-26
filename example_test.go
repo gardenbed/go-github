@@ -8,18 +8,15 @@ import (
 )
 
 func ExampleClient_EnsureScopes() {
-	c := github.NewClient("")
-
-	err := c.EnsureScopes(context.Background(), github.ScopeRepo)
-	if err != nil {
+	client := github.NewClient("")
+	if err := client.EnsureScopes(context.Background(), github.ScopeRepo); err != nil {
 		panic(err)
 	}
 }
 
-func ExampleUsersService_Get() {
-	c := github.NewClient("")
-
-	user, resp, err := c.Users.Get(context.Background(), "octocat")
+func ExampleUserService_Get() {
+	client := github.NewClient("")
+	user, resp, err := client.Users.Get(context.Background(), "octocat")
 	if err != nil {
 		panic(err)
 	}
@@ -29,9 +26,8 @@ func ExampleUsersService_Get() {
 }
 
 func ExampleRepoService_Commits() {
-	c := github.NewClient("")
-
-	commits, resp, err := c.Repo("octocat", "Hello-World").Commits(context.Background(), 50, 1)
+	client := github.NewClient("")
+	commits, resp, err := client.Repo("octocat", "Hello-World").Commits(context.Background(), 50, 1)
 	if err != nil {
 		panic(err)
 	}
@@ -43,25 +39,9 @@ func ExampleRepoService_Commits() {
 	}
 }
 
-func ExamplePullsService_All() {
-	c := github.NewClient("")
-
-	pull, resp, err := c.Repo("octocat", "Hello-World").Pulls.All(context.Background(), 50, 1, github.PullsFilter{})
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("Pages: %+v\n", resp.Pages)
-	fmt.Printf("Rate: %+v\n\n", resp.Rate)
-	for _, p := range pull {
-		fmt.Printf("Title: %s\n", p.Title)
-	}
-}
-
-func ExampleIssuesService_All() {
-	c := github.NewClient("")
-
-	issues, resp, err := c.Repo("octocat", "Hello-World").Issues.All(context.Background(), 50, 1, github.IssuesFilter{})
+func ExampleIssueService_List() {
+	client := github.NewClient("")
+	issues, resp, err := client.Repo("octocat", "Hello-World").Issues.List(context.Background(), 50, 1, github.IssuesFilter{})
 	if err != nil {
 		panic(err)
 	}
@@ -70,5 +50,57 @@ func ExampleIssuesService_All() {
 	fmt.Printf("Rate: %+v\n\n", resp.Rate)
 	for _, i := range issues {
 		fmt.Printf("Title: %s\n", i.Title)
+	}
+}
+
+func ExamplePullService_List() {
+	client := github.NewClient("")
+	pulls, resp, err := client.Repo("octocat", "Hello-World").Pulls.List(context.Background(), 50, 1, github.PullsFilter{})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Pages: %+v\n", resp.Pages)
+	fmt.Printf("Rate: %+v\n\n", resp.Rate)
+	for _, p := range pulls {
+		fmt.Printf("Title: %s\n", p.Title)
+	}
+}
+
+func ExampleReleaseService_List() {
+	client := github.NewClient("")
+	releases, resp, err := client.Repo("octocat", "Hello-World").Releases.List(context.Background(), 20, 1)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Pages: %+v\n", resp.Pages)
+	fmt.Printf("Rate: %+v\n\n", resp.Rate)
+	for _, r := range releases {
+		fmt.Printf("Name: %s\n", r.Name)
+	}
+}
+
+func ExampleSearchService_SearchIssues() {
+	client := github.NewClient("")
+
+	query := github.SearchQuery{}
+	query.IncludeKeywords("Fix")
+	query.ExcludeKeywords("WIP")
+	query.IncludeQualifiers(
+		github.QualifierTypePR,
+		github.QualifierInTitle,
+		github.QualifierLabel("bug"),
+	)
+
+	result, resp, err := client.Search.SearchIssues(context.Background(), 20, 1, "", "", query)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Pages: %+v\n", resp.Pages)
+	fmt.Printf("Rate: %+v\n\n", resp.Rate)
+	for _, issue := range result.Items {
+		fmt.Printf("%s\n", issue.HTMLURL)
 	}
 }

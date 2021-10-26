@@ -6,9 +6,9 @@ import (
 	"time"
 )
 
-// IssuesService provides GitHub APIs for issues in a repository.
+// IssueService provides GitHub APIs for issues in a repository.
 // See https://docs.github.com/en/rest/reference/issues
-type IssuesService struct {
+type IssueService struct {
 	client      *Client
 	owner, repo string
 }
@@ -60,9 +60,9 @@ type IssuesFilter struct {
 	Since time.Time
 }
 
-// All retrieves all issues in the repository page by page.
+// List retrieves all issues in the repository page by page.
 // See https://docs.github.com/rest/reference/issues#list-repository-issues
-func (s *IssuesService) All(ctx context.Context, pageSize, pageNo int, filter IssuesFilter) ([]Issue, *Response, error) {
+func (s *IssueService) List(ctx context.Context, pageSize, pageNo int, filter IssuesFilter) ([]Issue, *Response, error) {
 	url := fmt.Sprintf("/repos/%s/%s/issues", s.owner, s.repo)
 	req, err := s.client.NewPageRequest(ctx, "GET", url, pageSize, pageNo, nil)
 	if err != nil {
@@ -70,19 +70,15 @@ func (s *IssuesService) All(ctx context.Context, pageSize, pageNo int, filter Is
 	}
 
 	q := req.URL.Query()
-
 	if filter.State != "" {
 		q.Add("state", filter.State)
 	}
-
 	if !filter.Since.IsZero() {
 		q.Add("since", filter.Since.Format(time.RFC3339))
 	}
-
 	req.URL.RawQuery = q.Encode()
 
 	issues := []Issue{}
-
 	resp, err := s.client.Do(req, &issues)
 	if err != nil {
 		return nil, nil, err
@@ -93,7 +89,7 @@ func (s *IssuesService) All(ctx context.Context, pageSize, pageNo int, filter Is
 
 // Events retrieves all events for an issue in the repository page by page.
 // See https://docs.github.com/rest/reference/issues#list-issue-events
-func (s *IssuesService) Events(ctx context.Context, number, pageSize, pageNo int) ([]Event, *Response, error) {
+func (s *IssueService) Events(ctx context.Context, number, pageSize, pageNo int) ([]Event, *Response, error) {
 	url := fmt.Sprintf("/repos/%s/%s/issues/%d/events", s.owner, s.repo, number)
 	req, err := s.client.NewPageRequest(ctx, "GET", url, pageSize, pageNo, nil)
 	if err != nil {

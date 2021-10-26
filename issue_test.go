@@ -215,7 +215,7 @@ var (
 	}
 )
 
-func TestIssuesService_All(t *testing.T) {
+func TestIssueService_List(t *testing.T) {
 	c := &Client{
 		httpClient: &http.Client{},
 		rates:      map[rateGroup]Rate{},
@@ -227,7 +227,7 @@ func TestIssuesService_All(t *testing.T) {
 	tests := []struct {
 		name             string
 		mockResponses    []MockResponse
-		s                *IssuesService
+		s                *IssueService
 		ctx              context.Context
 		pageSize         int
 		pageNo           int
@@ -239,7 +239,7 @@ func TestIssuesService_All(t *testing.T) {
 		{
 			name:          "NilContext",
 			mockResponses: []MockResponse{},
-			s: &IssuesService{
+			s: &IssueService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -260,7 +260,7 @@ func TestIssuesService_All(t *testing.T) {
 					"message": "Bad credentials"
 				}`},
 			},
-			s: &IssuesService{
+			s: &IssueService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -279,7 +279,7 @@ func TestIssuesService_All(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/repos/octocat/Hello-World/issues", 200, http.Header{}, `[`},
 			},
-			s: &IssuesService{
+			s: &IssueService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -298,7 +298,7 @@ func TestIssuesService_All(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/repos/octocat/Hello-World/issues", 200, header, issuesBody},
 			},
-			s: &IssuesService{
+			s: &IssueService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -323,7 +323,7 @@ func TestIssuesService_All(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
-			issues, resp, err := tc.s.All(tc.ctx, tc.pageSize, tc.pageNo, tc.params)
+			issues, resp, err := tc.s.List(tc.ctx, tc.pageSize, tc.pageNo, tc.params)
 
 			if tc.expectedError != "" {
 				assert.Nil(t, issues)
@@ -341,7 +341,7 @@ func TestIssuesService_All(t *testing.T) {
 	}
 }
 
-func TestIssuesService_Events(t *testing.T) {
+func TestIssueService_Events(t *testing.T) {
 	c := &Client{
 		httpClient: &http.Client{},
 		rates:      map[rateGroup]Rate{},
@@ -351,7 +351,7 @@ func TestIssuesService_Events(t *testing.T) {
 	tests := []struct {
 		name             string
 		mockResponses    []MockResponse
-		s                *IssuesService
+		s                *IssueService
 		ctx              context.Context
 		number           int
 		pageSize         int
@@ -363,7 +363,7 @@ func TestIssuesService_Events(t *testing.T) {
 		{
 			name:          "NilContext",
 			mockResponses: []MockResponse{},
-			s: &IssuesService{
+			s: &IssueService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -381,7 +381,7 @@ func TestIssuesService_Events(t *testing.T) {
 					"message": "Bad credentials"
 				}`},
 			},
-			s: &IssuesService{
+			s: &IssueService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -397,7 +397,7 @@ func TestIssuesService_Events(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/repos/octocat/Hello-World/issues/1001/events", 200, http.Header{}, `[`},
 			},
-			s: &IssuesService{
+			s: &IssueService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
@@ -413,7 +413,7 @@ func TestIssuesService_Events(t *testing.T) {
 			mockResponses: []MockResponse{
 				{"GET", "/repos/octocat/Hello-World/issues/1001/events", 200, header, eventsBody},
 			},
-			s: &IssuesService{
+			s: &IssueService{
 				client: c,
 				owner:  "octocat",
 				repo:   "Hello-World",
