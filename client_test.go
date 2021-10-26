@@ -789,6 +789,11 @@ func TestClient_Repo(t *testing.T) {
 			assert.Equal(t, c, repo.Issues.client)
 			assert.Equal(t, tc.owner, repo.Issues.owner)
 			assert.Equal(t, tc.repo, repo.Issues.repo)
+
+			assert.NotNil(t, repo.Releases)
+			assert.Equal(t, c, repo.Releases.client)
+			assert.Equal(t, tc.owner, repo.Releases.owner)
+			assert.Equal(t, tc.repo, repo.Releases.repo)
 		})
 	}
 }

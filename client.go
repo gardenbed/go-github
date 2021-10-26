@@ -418,5 +418,10 @@ func (c *Client) Repo(owner, repo string) *RepoService {
 			owner:  owner,
 			repo:   repo,
 		},
+		Releases: &ReleaseService{
+			client: c,
+			owner:  owner,
+			repo:   repo,
+		},
 	}
 }

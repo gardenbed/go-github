@@ -3,8 +3,6 @@ package github
 import (
 	"context"
 	"fmt"
-	"io"
-	"path/filepath"
 	"time"
 )
 
@@ -15,8 +13,9 @@ type RepoService struct {
 	owner, repo string
 
 	// Services
-	Pulls  *PullsService
-	Issues *IssuesService
+	Pulls    *PullsService
+	Issues   *IssuesService
+	Releases *ReleaseService
 }
 
 // Repository is a GitHub repository object.
@@ -324,139 +323,4 @@ func (s *RepoService) Tags(ctx context.Context, pageSize, pageNo int) ([]Tag, *R
 	}
 
 	return tags, resp, nil
-}
-
-// LatestRelease returns the latest GitHub release.
-// The latest release is the most recent non-prerelease and non-draft release.
-// See https://docs.github.com/rest/reference/repos#get-the-latest-release
-func (s *RepoService) LatestRelease(ctx context.Context) (*Release, *Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/releases/latest", s.owner, s.repo)
-	req, err := s.client.NewRequest(ctx, "GET", url, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	release := new(Release)
-
-	resp, err := s.client.Do(req, release)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return release, resp, nil
-}
-
-// CreateRelease creates a new GitHub release.
-// See https://docs.github.com/rest/reference/repos#create-a-release
-func (s *RepoService) CreateRelease(ctx context.Context, params ReleaseParams) (*Release, *Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/releases", s.owner, s.repo)
-	req, err := s.client.NewRequest(ctx, "POST", url, params)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	release := new(Release)
-
-	resp, err := s.client.Do(req, release)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return release, resp, nil
-}
-
-// UpdateRelease updates an existing GitHub release.
-// See https://docs.github.com/rest/reference/repos#update-a-release
-func (s *RepoService) UpdateRelease(ctx context.Context, releaseID int, params ReleaseParams) (*Release, *Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/releases/%d", s.owner, s.repo, releaseID)
-	req, err := s.client.NewRequest(ctx, "PATCH", url, params)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	release := new(Release)
-
-	resp, err := s.client.Do(req, release)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return release, resp, nil
-}
-
-// UploadReleaseAsset uploads a file to a GitHub release.
-// See https://docs.github.com/rest/reference/repos#upload-a-release-asset
-func (s *RepoService) UploadReleaseAsset(ctx context.Context, releaseID int, assetFile, assetLabel string) (*ReleaseAsset, *Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/releases/%d/assets", s.owner, s.repo, releaseID)
-	req, closer, err := s.client.NewUploadRequest(ctx, url, assetFile)
-	if err != nil {
-		return nil, nil, err
-	}
-	defer closer.Close()
-
-	q := req.URL.Query()
-	if assetName := filepath.Base(assetFile); assetName != "" {
-		q.Add("name", assetName)
-	}
-	if assetLabel != "" {
-		q.Add("label", assetLabel)
-	}
-	req.URL.RawQuery = q.Encode()
-
-	asset := new(ReleaseAsset)
-
-	resp, err := s.client.Do(req, asset)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return asset, resp, nil
-}
-
-// DownloadReleaseAsset downloads an asset from a GitHub release.
-func (s *RepoService) DownloadReleaseAsset(ctx context.Context, releaseTag, assetName string, w io.Writer) (*Response, error) {
-	url := fmt.Sprintf("/%s/%s/releases/download/%s/%s", s.owner, s.repo, releaseTag, assetName)
-	req, err := s.client.NewDownloadRequest(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := s.client.Do(req, w)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}
-
-// DownloadTarArchive downloads a repository archive in tar format.
-func (s *RepoService) DownloadTarArchive(ctx context.Context, ref string, w io.Writer) (*Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/tarball/%s", s.owner, s.repo, ref)
-	req, err := s.client.NewRequest(ctx, "GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := s.client.Do(req, w)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}
-
-// DownloadZipArchive downloads a repository archive in zip format.
-func (s *RepoService) DownloadZipArchive(ctx context.Context, ref string, w io.Writer) (*Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/zipball/%s", s.owner, s.repo, ref)
-	req, err := s.client.NewRequest(ctx, "GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := s.client.Do(req, w)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
 }
