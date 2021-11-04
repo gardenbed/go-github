@@ -566,6 +566,8 @@ func TestSearchUsers(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			result, resp, err := tc.s.SearchUsers(tc.ctx, tc.pageSize, tc.pageNo, tc.sort, tc.order, tc.query)
@@ -672,6 +674,8 @@ func TestSearchRepos(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			result, resp, err := tc.s.SearchRepos(tc.ctx, tc.pageSize, tc.pageNo, tc.sort, tc.order, tc.query)
@@ -778,6 +782,8 @@ func TestSearchIssues(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			result, resp, err := tc.s.SearchIssues(tc.ctx, tc.pageSize, tc.pageNo, tc.sort, tc.order, tc.query)

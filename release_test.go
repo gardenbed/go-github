@@ -222,6 +222,8 @@ func TestReleaseService_List(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			releases, resp, err := tc.s.List(tc.ctx, tc.pageSize, tc.pageNo)
@@ -318,6 +320,8 @@ func TestReleaseService_Latest(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			release, resp, err := tc.s.Latest(tc.ctx)
@@ -418,6 +422,8 @@ func TestReleaseService_Get(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			release, resp, err := tc.s.Get(tc.ctx, tc.id)
@@ -518,6 +524,8 @@ func TestReleaseService_GetByTag(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			release, resp, err := tc.s.GetByTag(tc.ctx, tc.tag)
@@ -627,6 +635,8 @@ func TestReleaseService_Create(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			release, resp, err := tc.s.Create(tc.ctx, tc.params)
@@ -741,6 +751,8 @@ func TestReleaseService_Update(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			release, resp, err := tc.s.Update(tc.ctx, tc.id, tc.params)
@@ -825,6 +837,8 @@ func TestReleaseService_Delete(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			resp, err := tc.s.Delete(tc.ctx, tc.id)
@@ -961,6 +975,8 @@ func TestReleaseService_UploadAsset(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.uploadURL, _ = url.Parse(ts.URL)
 
 			asset, resp, err := tc.s.UploadAsset(tc.ctx, tc.id, tc.assetFile, tc.assetLabel)
@@ -1051,6 +1067,8 @@ func TestReleaseService_DownloadAsset(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.downloadURL, _ = url.Parse(ts.URL)
 
 			resp, err := tc.s.DownloadAsset(tc.ctx, tc.releaseTag, tc.assetName, tc.w)
@@ -1135,6 +1153,8 @@ func TestReleaseService_DownloadTarArchive(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			resp, err := tc.s.DownloadTarArchive(tc.ctx, tc.ref, tc.w)
@@ -1219,6 +1239,8 @@ func TestReleaseService_DownloadZipArchive(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			resp, err := tc.s.DownloadZipArchive(tc.ctx, tc.ref, tc.w)
