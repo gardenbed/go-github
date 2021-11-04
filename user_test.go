@@ -103,6 +103,8 @@ func TestUserService_User(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			user, resp, err := tc.s.User(tc.ctx)
@@ -197,6 +199,8 @@ func TestUserService_Get(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			user, resp, err := tc.s.Get(tc.ctx, tc.username)

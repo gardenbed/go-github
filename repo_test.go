@@ -355,6 +355,8 @@ func TestRepoService_Get(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			repository, resp, err := tc.s.Get(tc.ctx)
@@ -455,6 +457,8 @@ func TestRepoService_Permission(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			permission, resp, err := tc.s.Permission(tc.ctx, tc.username)
@@ -555,6 +559,8 @@ func TestRepoService_Commit(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			commit, resp, err := tc.s.Commit(tc.ctx, tc.ref)
@@ -661,6 +667,8 @@ func TestRepoService_Commits(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			commits, resp, err := tc.s.Commits(tc.ctx, tc.pageSize, tc.pageNo)
@@ -762,6 +770,8 @@ func TestRepoService_Branch(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			branch, resp, err := tc.s.Branch(tc.ctx, tc.branchName)
@@ -867,6 +877,8 @@ func TestRepoService_BranchProtection(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			resp, err := tc.s.BranchProtection(tc.ctx, tc.branch, tc.enabled)
@@ -971,6 +983,8 @@ func TestRepoService_Tags(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			tags, resp, err := tc.s.Tags(tc.ctx, tc.pageSize, tc.pageNo)

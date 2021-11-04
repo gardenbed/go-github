@@ -659,6 +659,8 @@ func TestClient_Do(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if len(tc.mockResponses) > 0 {
 				ts := newHTTPTestServer(tc.mockResponses...)
+				defer ts.Close()
+
 				serverURL, _ := url.Parse(ts.URL)
 
 				reqURL, err := serverURL.Parse(tc.reqURL)
@@ -742,6 +744,8 @@ func TestClient_EnsureScopes(t *testing.T) {
 			}
 
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			c.apiURL, _ = url.Parse(ts.URL)
 
 			err := c.EnsureScopes(tc.ctx, tc.scopes...)

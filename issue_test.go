@@ -321,6 +321,8 @@ func TestIssueService_List(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			issues, resp, err := tc.s.List(tc.ctx, tc.pageSize, tc.pageNo, tc.params)
@@ -433,6 +435,8 @@ func TestIssueService_Events(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
 			tc.s.client.apiURL, _ = url.Parse(ts.URL)
 
 			events, resp, err := tc.s.Events(tc.ctx, tc.number, tc.pageSize, tc.pageNo)
