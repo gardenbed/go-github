@@ -190,35 +190,3 @@ func (s *ReleaseService) DownloadAsset(ctx context.Context, tag, assetName strin
 
 	return resp, nil
 }
-
-// DownloadTarArchive downloads a repository archive in tar format.
-func (s *ReleaseService) DownloadTarArchive(ctx context.Context, ref string, w io.Writer) (*Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/tarball/%s", s.owner, s.repo, ref)
-	req, err := s.client.NewRequest(ctx, "GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := s.client.Do(req, w)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}
-
-// DownloadZipArchive downloads a repository archive in zip format.
-func (s *ReleaseService) DownloadZipArchive(ctx context.Context, ref string, w io.Writer) (*Response, error) {
-	url := fmt.Sprintf("/repos/%s/%s/zipball/%s", s.owner, s.repo, ref)
-	req, err := s.client.NewRequest(ctx, "GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := s.client.Do(req, w)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}

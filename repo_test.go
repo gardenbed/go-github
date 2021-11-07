@@ -2,6 +2,8 @@ package github
 
 import (
 	"context"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"testing"
@@ -999,6 +1001,178 @@ func TestRepoService_Tags(t *testing.T) {
 				assert.NotNil(t, resp)
 				assert.NotNil(t, resp.Response)
 				assert.Equal(t, tc.expectedResponse.Pages, resp.Pages)
+				assert.Equal(t, tc.expectedResponse.Rate, resp.Rate)
+			}
+		})
+	}
+}
+
+func TestRepoService_DownloadTarArchive(t *testing.T) {
+	c := &Client{
+		httpClient: &http.Client{},
+		rates:      map[rateGroup]Rate{},
+		apiURL:     publicAPIURL,
+	}
+
+	tests := []struct {
+		name             string
+		mockResponses    []MockResponse
+		s                *RepoService
+		ctx              context.Context
+		ref              string
+		w                io.Writer
+		expectedResponse *Response
+		expectedError    string
+	}{
+		{
+			name:          "NilContext",
+			mockResponses: []MockResponse{},
+			s: &RepoService{
+				client: c,
+				owner:  "octocat",
+				repo:   "Hello-World",
+			},
+			ctx:           nil,
+			ref:           "main",
+			w:             nil,
+			expectedError: `net/http: nil Context`,
+		},
+		{
+			name: "InvalidStatusCode",
+			mockResponses: []MockResponse{
+				{"GET", "/repos/octocat/Hello-World/tarball/main", 401, http.Header{}, ``},
+			},
+			s: &RepoService{
+				client: c,
+				owner:  "octocat",
+				repo:   "Hello-World",
+			},
+			ctx:           context.Background(),
+			ref:           "main",
+			w:             ioutil.Discard,
+			expectedError: `GET /repos/octocat/Hello-World/tarball/main: 401 `,
+		},
+		{
+			name: "Success",
+			mockResponses: []MockResponse{
+				{"GET", "/repos/octocat/Hello-World/tarball/main", 200, header, `content`},
+			},
+			s: &RepoService{
+				client: c,
+				owner:  "octocat",
+				repo:   "Hello-World",
+			},
+			ctx: context.Background(),
+			ref: "main",
+			w:   ioutil.Discard,
+			expectedResponse: &Response{
+				Rate: expectedRate,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
+			tc.s.client.apiURL, _ = url.Parse(ts.URL)
+
+			resp, err := tc.s.DownloadTarArchive(tc.ctx, tc.ref, tc.w)
+
+			if tc.expectedError != "" {
+				assert.Nil(t, resp)
+				assert.EqualError(t, err, tc.expectedError)
+			} else {
+				assert.NoError(t, err)
+				assert.NotNil(t, resp)
+				assert.NotNil(t, resp.Response)
+				assert.Equal(t, tc.expectedResponse.Rate, resp.Rate)
+			}
+		})
+	}
+}
+
+func TestRepoService_DownloadZipArchive(t *testing.T) {
+	c := &Client{
+		httpClient: &http.Client{},
+		rates:      map[rateGroup]Rate{},
+		apiURL:     publicAPIURL,
+	}
+
+	tests := []struct {
+		name             string
+		mockResponses    []MockResponse
+		s                *RepoService
+		ctx              context.Context
+		ref              string
+		w                io.Writer
+		expectedResponse *Response
+		expectedError    string
+	}{
+		{
+			name:          "NilContext",
+			mockResponses: []MockResponse{},
+			s: &RepoService{
+				client: c,
+				owner:  "octocat",
+				repo:   "Hello-World",
+			},
+			ctx:           nil,
+			ref:           "main",
+			w:             nil,
+			expectedError: `net/http: nil Context`,
+		},
+		{
+			name: "InvalidStatusCode",
+			mockResponses: []MockResponse{
+				{"GET", "/repos/octocat/Hello-World/zipball/main", 401, http.Header{}, ``},
+			},
+			s: &RepoService{
+				client: c,
+				owner:  "octocat",
+				repo:   "Hello-World",
+			},
+			ctx:           context.Background(),
+			ref:           "main",
+			w:             ioutil.Discard,
+			expectedError: `GET /repos/octocat/Hello-World/zipball/main: 401 `,
+		},
+		{
+			name: "Success",
+			mockResponses: []MockResponse{
+				{"GET", "/repos/octocat/Hello-World/zipball/main", 200, header, `content`},
+			},
+			s: &RepoService{
+				client: c,
+				owner:  "octocat",
+				repo:   "Hello-World",
+			},
+			ctx: context.Background(),
+			ref: "main",
+			w:   ioutil.Discard,
+			expectedResponse: &Response{
+				Rate: expectedRate,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ts := newHTTPTestServer(tc.mockResponses...)
+			defer ts.Close()
+
+			tc.s.client.apiURL, _ = url.Parse(ts.URL)
+
+			resp, err := tc.s.DownloadZipArchive(tc.ctx, tc.ref, tc.w)
+
+			if tc.expectedError != "" {
+				assert.Nil(t, resp)
+				assert.EqualError(t, err, tc.expectedError)
+			} else {
+				assert.NoError(t, err)
+				assert.NotNil(t, resp)
+				assert.NotNil(t, resp.Response)
 				assert.Equal(t, tc.expectedResponse.Rate, resp.Rate)
 			}
 		})
