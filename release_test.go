@@ -3,7 +3,6 @@ package github
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"testing"
@@ -1041,7 +1040,7 @@ func TestReleaseService_DownloadAsset(t *testing.T) {
 			ctx:           context.Background(),
 			releaseTag:    "v1.0.0",
 			assetName:     "example.zip",
-			w:             ioutil.Discard,
+			w:             io.Discard,
 			expectedError: `GET /octocat/Hello-World/releases/download/v1.0.0/example.zip: 401 `,
 		},
 		{
@@ -1057,7 +1056,7 @@ func TestReleaseService_DownloadAsset(t *testing.T) {
 			ctx:        context.Background(),
 			releaseTag: "v1.0.0",
 			assetName:  "example.zip",
-			w:          ioutil.Discard,
+			w:          io.Discard,
 			expectedResponse: &Response{
 				Rate: expectedRate,
 			},

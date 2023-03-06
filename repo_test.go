@@ -3,7 +3,6 @@ package github
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"testing"
@@ -1049,7 +1048,7 @@ func TestRepoService_DownloadTarArchive(t *testing.T) {
 			},
 			ctx:           context.Background(),
 			ref:           "main",
-			w:             ioutil.Discard,
+			w:             io.Discard,
 			expectedError: `GET /repos/octocat/Hello-World/tarball/main: 401 `,
 		},
 		{
@@ -1064,7 +1063,7 @@ func TestRepoService_DownloadTarArchive(t *testing.T) {
 			},
 			ctx: context.Background(),
 			ref: "main",
-			w:   ioutil.Discard,
+			w:   io.Discard,
 			expectedResponse: &Response{
 				Rate: expectedRate,
 			},
@@ -1135,7 +1134,7 @@ func TestRepoService_DownloadZipArchive(t *testing.T) {
 			},
 			ctx:           context.Background(),
 			ref:           "main",
-			w:             ioutil.Discard,
+			w:             io.Discard,
 			expectedError: `GET /repos/octocat/Hello-World/zipball/main: 401 `,
 		},
 		{
@@ -1150,7 +1149,7 @@ func TestRepoService_DownloadZipArchive(t *testing.T) {
 			},
 			ctx: context.Background(),
 			ref: "main",
-			w:   ioutil.Discard,
+			w:   io.Discard,
 			expectedResponse: &Response{
 				Rate: expectedRate,
 			},

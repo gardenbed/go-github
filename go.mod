@@ -1,10 +1,10 @@
 module github.com/gardenbed/go-github
 
-go 1.19
+go 1.20
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 )
 
 require (
