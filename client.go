@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -293,7 +292,7 @@ func (c *Client) Do(req *http.Request, body interface{}) (*Response, error) {
 	defer func() {
 		// Ensure we fully read and close the response body, so the underlying TCP connection can be reused.
 		// If it errors, the TCP connection will not be reused anyway.
-		_, _ = io.Copy(ioutil.Discard, r.Body)
+		_, _ = io.Copy(io.Discard, r.Body)
 		r.Body.Close()
 	}()
 
@@ -317,13 +316,13 @@ func (c *Client) Do(req *http.Request, body interface{}) (*Response, error) {
 			Response: r,
 		}
 
-		b, err := ioutil.ReadAll(resp.Body)
+		b, err := io.ReadAll(resp.Body)
 		if err == nil && b != nil {
 			_ = json.Unmarshal(b, respErr)
 		}
 
 		// Restore response body
-		// r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+		// r.Body = io.NopCloser(bytes.NewBuffer(b))
 
 		switch r.StatusCode {
 		case http.StatusBadRequest:
