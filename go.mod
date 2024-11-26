@@ -1,6 +1,6 @@
 module github.com/gardenbed/go-github
 
-go 1.22.2
+go 1.23.3
 
 require (
 	github.com/gorilla/mux v1.8.1
