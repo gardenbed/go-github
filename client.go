@@ -204,14 +204,14 @@ func (c *Client) NewUploadRequest(ctx context.Context, url, filepath string) (*h
 
 	stat, err := f.Stat()
 	if err != nil {
-		f.Close()
+		_ = f.Close()
 		return nil, nil, err
 	}
 
 	// Read the first 512 bytes of file to determine the media type of the file
 	buff := make([]byte, 512)
 	if _, err := f.Read(buff); err != nil {
-		f.Close()
+		_ = f.Close()
 		return nil, nil, err
 	}
 
@@ -220,13 +220,13 @@ func (c *Client) NewUploadRequest(ctx context.Context, url, filepath string) (*h
 
 	// Reset the offset back to the beginning of the file
 	if _, err = f.Seek(0, io.SeekStart); err != nil {
-		f.Close()
+		_ = f.Close()
 		return nil, nil, err
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", u.String(), f)
 	if err != nil {
-		f.Close()
+		_ = f.Close()
 		return nil, nil, err
 	}
 
@@ -293,7 +293,7 @@ func (c *Client) Do(req *http.Request, body interface{}) (*Response, error) {
 		// Ensure we fully read and close the response body, so the underlying TCP connection can be reused.
 		// If it errors, the TCP connection will not be reused anyway.
 		_, _ = io.Copy(io.Discard, r.Body)
-		r.Body.Close()
+		_ = r.Body.Close()
 	}()
 
 	resp := newResponse(r)

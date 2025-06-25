@@ -154,7 +154,10 @@ func (s *ReleaseService) UploadAsset(ctx context.Context, id int, assetFile, ass
 	if err != nil {
 		return nil, nil, err
 	}
-	defer closer.Close()
+
+	defer func() {
+		_ = closer.Close()
+	}()
 
 	q := req.URL.Query()
 	if assetName := filepath.Base(assetFile); assetName != "" {
