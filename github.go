@@ -1,3 +1,4 @@
+// Package github provides types and methods for calling the GitHub API.
 package github
 
 import (

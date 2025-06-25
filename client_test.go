@@ -342,7 +342,9 @@ func TestClient_NewUploadRequest(t *testing.T) {
 
 			req, closer, err := c.NewUploadRequest(tc.ctx, tc.url, tc.filepath)
 			if err == nil {
-				defer closer.Close()
+				defer func() {
+					assert.NoError(t, closer.Close())
+				}()
 			}
 
 			if tc.expectedError != "" {
